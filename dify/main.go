@@ -104,6 +104,32 @@ type ExtensionPointResponse struct {
 func main() {
 	router := gin.Default()
 
+	// 处理 GET 请求
+	router.GET("/new-api-for-dify", func(c *gin.Context) {
+		s := strings.TrimSpace(c.Query("keyword"))
+		if s == "" {
+			c.JSON(http.StatusBadRequest, ExtensionPointResponse{Result: "empty keyword"})
+			return
+		}
+
+		movies, err := GetSearchResult(s, 3, "movies", 0, "soulteary")
+		if err != nil {
+			c.JSON(http.StatusBadRequest, ExtensionPointResponse{Result: err.Error()})
+			return
+		}
+
+		var result string
+		for _, movie := range movies.Results {
+			for _, hit := range movie.Hits {
+				result += fmt.Sprintf("- 标题：%s\n", hit.Title)
+				result += fmt.Sprintf("- 简介：%s\n\n", hit.Overview)
+			}
+		}
+
+		c.JSON(http.StatusOK, ExtensionPointResponse{Result: result})
+	})
+	
+	// 处理 POST 请求
 	router.POST("/new-api-for-dify", func(c *gin.Context) {
 		var req ExtensionPointRequest
 
