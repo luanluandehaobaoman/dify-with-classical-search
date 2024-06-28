@@ -177,5 +177,5 @@ func main() {
 		c.JSON(http.StatusOK, ExtensionPointResponse{Result: result})
 	})
 
-	router.Run(":80")
+	router.Run(":88")
 }
